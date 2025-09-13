@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>الموسوعة الشاملة للغة HTML</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
+    
+    <!-- هذا الجزء يحتوي على التصميم (CSS) والمنطق الخاص بالوضع الليلي والبنية الجديدة -->
+    <style>
+        /* إعدادات الخط والألوان الأساسية */
+        body {
+            font-family: 'Cairo', sans-serif;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        /* متغيرات الألوان للوضع الفاتح */
+        :root {
+            --bg-color: #f8fafc;
+            --text-color: #1e293b;
+            --card-bg: #ffffff;
+            --border-color: #e2e8f0;
+            --accent-color: #3b82f6;
+            --accent-text: #ffffff;
+            --code-bg: #f1f5f9;
+            --code-text: #334155;
+            --header-bg: rgba(255, 255, 255, 0.8);
+            --sidebar-bg: #ffffff;
+            --correct-answer-bg: #dcfce7;
+            --correct-answer-border: #4ade80;
+        }
+
+        /* متغيرات الألوان للوضع الليلي */
+        .dark {
+            --bg-color: #0f172a;
+            --text-color: #e2e8f0;
+            --card-bg: #1e293b;
+            --border-color: #334155;
+            --accent-color: #60a5fa;
+            --accent-text: #1e293b;
+            --code-bg: #334155;
+            --code-text: #e2e8f0;
+            --header-bg: rgba(30, 41, 59, 0.8);
+            --sidebar-bg: #1e293b;
+            --correct-answer-bg: #042f2e;
+            --correct-answer-border: #22c55e;
+        }
+
+        /* تطبيق الألوان باستخدام المتغيرات */
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+        }
+        
+        .card {
+            background-color: var(--card-bg);
+            border-color: var(--border-color);
+        }
+
+        .code-block {
+            background-color: var(--code-bg);
+            color: var(--code-text);
+            border-color: var(--border-color);
+            direction: ltr;
+        }
+        
+        .sticky-header {
+            background-color: var(--header-bg);
+            backdrop-filter: blur(10px);
+        }
+
+        /* تصميم خاص لشريط التمرير */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: var(--bg-color); }
+        ::-webkit-scrollbar-thumb { background: var(--accent-color); border-radius: 10px; }
+        
+        /* تصميم زر تبديل الوضع الليلي */
+        .theme-switch-wrapper { display: flex; align-items: center; }
+        .theme-switch { display: inline-block; height: 24px; position: relative; width: 48px; }
+        .theme-switch input { display:none; }
+        .slider { background-color: #ccc; bottom: 0; cursor: pointer; left: 0; position: absolute; right: 0; top: 0; transition: .4s; border-radius: 34px; }
+        .slider:before { background-color: #fff; bottom: 2px; content: ""; height: 20px; left: 2px; position: absolute; transition: .4s; width: 20px; border-radius: 50%; }
+        input:checked + .slider { background-color: var(--accent-color); }
+        input:checked + .slider:before { transform: translateX(24px); }
+
+        /* تصميم القائمة الجانبية والمحتوى */
+        .sidebar-link.active {
+            background-color: var(--accent-color);
+            color: var(--accent-text);
+            font-weight: 700;
+        }
+        .content-page {
+            display: none;
+        }
+        .content-page.active {
+            display: block;
+        }
+        
+        /* تصميم قسم الاختبار */
+        .quiz-option.correct {
+            background-color: var(--correct-answer-bg);
+            border-left-width: 4px;
+            border-left-color: var(--correct-answer-border);
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <!-- Header: يحتوي على العنوان وزر الوضع الليلي -->
+    <header class="sticky-header sticky top-0 z-20 w-full border-b" style="border-color: var(--border-color);">
+        <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+            <h1 class="text-xl md:text-2xl font-bold" style="color: var(--accent-color);">موسوعة HTML</h1>
+            <div class="theme-switch-wrapper">
+                <label class="theme-switch" for="checkbox">
+                    <input type="checkbox" id="checkbox" />
+                    <div class="slider round"></div>
+                </label>
+            </div>
+        </div>
+    </header>
+
+    <div class="container mx-auto px-4 py-8">
+        <div class="lg:flex">
+            <!-- القائمة الجانبية للتنقل -->
+            <aside class="w-full lg:w-1/4 lg:pr-8 mb-8 lg:mb-0">
+                <div class="sticky top-20">
+                    <nav id="sidebar-nav" class="card border rounded-lg p-2 flex flex-col max-h-[80vh] overflow-y-auto">
+                        <a href="#page-intro" class="sidebar-link px-3 py-2 text-sm rounded-md transition-colors duration-200">1. مقدمة HTML</a>
+                        <a href="#page-editors" class="sidebar-link px-3 py-2 text-sm rounded-md transition-colors duration-200">2. محررات HTML</a>
+                        <a href="#page-basic" class="sidebar-link px-3 py-2 text-sm rounded-md transition-colors duration-200">3. أمثلة أساسية</a>
+                        <a href="#page-elements" class="sidebar-link px-3 py-2 text-sm rounded-md transition-colors duration-200">4. العناصر</a>
+                        <a href="#page-attributes" class="sidebar-link px-3 py-2 text-sm rounded-md transition-colors duration-200">5. السمات</a>
+                        <a href="#page-headings" class="sidebar-link px-3 py-2 text-sm rounded-md transition-colors duration-200">6. العناوين</a>
+                        <a href="#page-paragraphs" class="sidebar-link px-3 py-2 text-sm rounded-md transition-colors duration-200">7. الفقرات</a>
+                        <a href="#page-styles" class="sidebar-link px-3 py-2 text-sm rounded-md transition-colors duration-200">8. التنسيقات (Styles)</a>
+                        <a href="#page-formatting" class="sidebar-link px-3 py-2 text-sm rounded-md transition-colors duration-200">9. تنسيق النص</a>
+                        <a href="#page-quotations" class="sidebar-link px-3 py-2 text-sm rounded-md transition-colors duration-200">10. الاقتباسات</a>
+                        <a href="#page-comments" class="sidebar-link px-3 py-2 text-sm rounded-md transition-colors duration-200">11. التعليقات</a>
+                        <a href="#page-colors" class="sidebar-link px-3 py-2 text-sm rounded-md transition-colors duration-200">12. الألوان</a>
+                        <a href="#page-css" class="sidebar-link px-3 py-2 text-sm rounded-md transition-colors duration-200">13. الربط مع CSS</a>
+                        <a href="#page-links" class="sidebar-link px-3 py-2 text-sm rounded-md transition-colors duration-200">14. الروابط</a>
+                        <a href="#page-link-colors" class="sidebar-link px-3 py-2 text-sm rounded-md transition-colors duration-200">15. ألوان الروابط</a>
+                        <a href="#page-bookmarks" class="sidebar-link px-3 py-2 text-sm rounded-md transition-colors duration-200">16. الإشارات المرجعية</a>
+                        <a href="#page-images" class="sidebar-link px-3 py-2 text-sm rounded-md transition-colors duration-200">17. الصور</a>
+                        <a href="#page-favicon" class="sidebar-link px-3 py-2 text-sm rounded-md transition-colors duration-200">18. أيقونة الموقع (Favicon)</a>
+                        <a href="#page-title" class="sidebar-link px-3 py-2 text-sm rounded-md transition-colors duration-200">19. عنوان الصفحة</a>
+                        <a href="#page-div" class="sidebar-link px-3 py-2 text-sm rounded-md transition-colors duration-200">20. عنصر Div</a>
+                        <a href="#page-class-id" class="sidebar-link px-3 py-2 text-sm rounded-md transition-colors duration-200">21. Class و ID</a>
+                        <a href="#page-iframes" class="sidebar-link px-3 py-2 text-sm rounded-md transition-colors duration-200">22. Iframes</a>
+                        <a href="#page-javascript" class="sidebar-link px-3 py-2 text-sm rounded-md transition-colors duration-200">23. JavaScript</a>
+                        <a href="#page-filepaths" class="sidebar-link px-3 py-2 text-sm rounded-md transition-colors duration-200">24. مسارات الملفات</a>
+                        <a href="#page-head" class="sidebar-link px-3 py-2 text-sm rounded-md transition-colors duration-200">25. عنصر Head</a>
+                        <a href="#page-layout" class="sidebar-link px-3 py-2 text-sm rounded-md transition-colors duration-200">26. تخطيط الصفحة</a>
+                        <a href="#page-responsive" class="sidebar-link px-3 py-2 text-sm rounded-md transition-colors duration-200">27. التصميم المتجاوب</a>
+                        <a href="#page-computercode" class="sidebar-link px-3 py-2 text-sm rounded-md transition-colors duration-200">28. عناصر أكواد الكمبيوتر</a>
+                        <a href="#page-quiz" class="sidebar-link px-3 py-2 text-sm rounded-md transition-colors duration-200 font-bold">29. اختبر معلوماتك</a>
+                    </nav>
+                </div>
+            </aside>
+
+            <!-- المحتوى الرئيسي الذي يتغير -->
+            <main id="main-content" class="w-full lg:w-3/4">
+                
+                <section id="page-intro" class="content-page"><div class="card p-6 rounded-lg border shadow-sm"><h2 class="text-2xl font-bold mb-4 border-b pb-2">1. مقدمة HTML</h2><p>HTML هي لغة ترميز النص الفائق، وهي اللغة القياسية المستخدمة لإنشاء صفحات الويب. تصف HTML هيكل صفحة الويب باستخدام مجموعة من العناصر والوسوم.</p></div></section>
+                <section id="page-editors" class="content-page"><div class="card p-6 rounded-lg border shadow-sm"><h2 class="text-2xl font-bold mb-4 border-b pb-2">2. محررات HTML</h2><p>يمكن كتابة HTML في أي محرر نصوص بسيط مثل Notepad، ولكن المحررات المخصصة للبرمجة توفر ميزات أفضل مثل تلوين الأكواد، الإكمال التلقائي، وتصحيح الأخطاء. من أشهر المحررات: Visual Studio Code, Sublime Text, Atom.</p></div></section>
+                <section id="page-basic" class="content-page"><div class="card p-6 rounded-lg border shadow-sm"><h2 class="text-2xl font-bold mb-4 border-b pb-2">3. أمثلة أساسية</h2><p>هذا هو الهيكل الأساسي لأي صفحة HTML.</p><div class="code-block p-4 rounded-lg text-left mt-4"><pre><code>&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+&lt;head&gt;
+  &lt;title&gt;عنوان الصفحة&lt;/title&gt;
+&lt;/head&gt;
+&lt;body&gt;
+  &lt;h1&gt;عنواني الأول&lt;/h1&gt;
+  &lt;p&gt;فقرتي الأولى.&lt;/p&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre></div></div></section>
+                <section id="page-elements" class="content-page"><div class="card p-6 rounded-lg border shadow-sm"><h2 class="text-2xl font-bold mb-4 border-b pb-2">4. العناصر (Elements)</h2><p>عنصر HTML يتكون من وسم بداية، محتوى، ووسم نهاية. مثال: <code>&lt;p&gt;هذا محتوى.&lt;/p&gt;</code>. بعض العناصر فارغة ولا تحتاج وسم نهاية، مثل <code>&lt;br&gt;</code> (فاصل أسطر) و <code>&lt;hr&gt;</code> (خط أفقي).</p><h4 class="text-lg font-semibold mt-4 mb-2">مثال:</h4><div class="code-block p-4 rounded-lg text-left mt-2"><pre><code>&lt;h2&gt;العناصر&lt;/h2&gt;
+&lt;p&gt;هذه فقرة نصية.&lt;/p&gt;
+&lt;br&gt;
+&lt;p&gt;وهذه فقرة أخرى بعد فاصل الأسطر.&lt;/p&gt;</code></pre></div></div></section>
+                <section id="page-attributes" class="content-page"><div class="card p-6 rounded-lg border shadow-sm"><h2 class="text-2xl font-bold mb-4 border-b pb-2">5. السمات (Attributes)</h2><p>توفر السمات معلومات إضافية عن العناصر. تكتب دائمًا في وسم البداية على شكل `name="value"`. مثال: <code>&lt;a href="url"&gt;</code> و <code>&lt;img src="path"&gt;</code>. السمة `disabled` لا تحتاج قيمة، مجرد وجودها يعطل العنصر.</p><h4 class="text-lg font-semibold mt-4 mb-2">مثال:</h4><div class="code-block p-4 rounded-lg text-left mt-2"><pre><code>&lt;!-- السمة href تحدد وجهة الرابط --&gt;
+&lt;a href="https://www.google.com"&gt;اذهب إلى جوجل&lt;/a&gt;
+
+&lt;!-- السمة src تحدد مسار الصورة --&gt;
+&lt;img src="image.jpg" alt="وصف الصورة"&gt;
+
+&lt;!-- السمة lang تحدد لغة العنصر --&gt;
+&lt;p lang="en"&gt;Hello World!&lt;/p&gt;</code></pre></div></div></section>
+                <section id="page-headings" class="content-page"><div class="card p-6 rounded-lg border shadow-sm"><h2 class="text-2xl font-bold mb-4 border-b pb-2">6. العناوين</h2><p>تستخدم العناوين من <code>&lt;h1&gt;</code> إلى <code>&lt;h6&gt;</code> لتحديد أهمية العناوين، حيث <code>&lt;h1&gt;</code> هو الأهم والأكبر حجمًا، و <code>&lt;h6&gt;</code> هو الأقل أهمية والأصغر حجمًا.</p><h4 class="text-lg font-semibold mt-4 mb-2">مثال:</h4><div class="code-block p-4 rounded-lg text-left mt-2"><pre><code>&lt;h1&gt;هذا هو العنوان الأول&lt;/h1&gt;
+&lt;h2&gt;هذا هو العنوان الثاني&lt;/h2&gt;
+&lt;h3&gt;هذا هو العنوان الثالث&lt;/h3&gt;
+&lt;h4&gt;هذا هو العنوان الرابع&lt;/h4&gt;
+&lt;h5&gt;هذا هو العنوان الخامس&lt;/h5&gt;
+&lt;h6&gt;هذا هو العنوان السادس&lt;/h6&gt;</code></pre></div></div></section>
+                <section id="page-paragraphs" class="content-page"><div class="card p-6 rounded-lg border shadow-sm"><h2 class="text-2xl font-bold mb-4 border-b pb-2">7. الفقرات</h2><p>يستخدم الوسم <code>&lt;p&gt;</code> لتعريف الفقرات النصية. المتصفح يضيف مسافة (هامش) قبل وبعد كل فقرة تلقائيًا لفصلها عن باقي المحتوى.</p><h4 class="text-lg font-semibold mt-4 mb-2">مثال:</h4><div class="code-block p-4 rounded-lg text-left mt-2"><pre><code>&lt;p&gt;هذه هي الفقرة الأولى. تحتوي على نص يصف موضوعًا معينًا.&lt;/p&gt;
+&lt;p&gt;هذه هي الفقرة الثانية. لاحظ كيف يفصل المتصفح بينها وبين الفقرة الأولى.&lt;/p&gt;</code></pre></div></div></section>
+                <section id="page-styles" class="content-page"><div class="card p-6 rounded-lg border shadow-sm"><h2 class="text-2xl font-bold mb-4 border-b pb-2">8. التنسيقات (Styles)</h2><p>تستخدم سمة <code>style</code> لإضافة تنسيقات CSS مباشرة للعنصر (Inline CSS)، مثل الألوان والحجم والخطوط. الصيغة هي <code>style="property:value;"</code>.</p><div class="code-block p-4 rounded-lg text-left mt-4"><pre><code>&lt;p style="color:blue; font-size:16px;"&gt;هذه فقرة زرقاء.&lt;/p&gt;
+&lt;h1 style="text-align:center; color:red;"&gt;عنوان في المنتصف باللون الأحمر&lt;/h1&gt;</code></pre></div></div></section>
+                <section id="page-formatting" class="content-page"><div class="card p-6 rounded-lg border shadow-sm"><h2 class="text-2xl font-bold mb-4 border-b pb-2">9. تنسيق النص</h2><p>توفر HTML وسومًا لتنسيق النص بصريًا أو دلاليًا: <code>&lt;b&gt;</code> (عريض)، <code>&lt;strong&gt;</code> (مهم)، <code>&lt;i&gt;</code> (مائل)، <code>&lt;em&gt;</code> (مؤكد)، <code>&lt;mark&gt;</code> (تظليل)، <code>&lt;sub&gt;</code> (نص منخفض)، <code>&lt;sup&gt;</code> (نص مرتفع).</p><h4 class="text-lg font-semibold mt-4 mb-2">مثال:</h4><div class="code-block p-4 rounded-lg text-left mt-2"><pre><code>&lt;p&gt;هذا نص &lt;b&gt;عريض&lt;/b&gt; وهذا نص &lt;strong&gt;مهم&lt;/strong&gt;.&lt;/p&gt;
+&lt;p&gt;هذا نص &lt;i&gt;مائل&lt;/i&gt; وهذا نص &lt;em&gt;مؤكد&lt;/em&gt;.&lt;/p&gt;
+&lt;p&gt;لا تنسَ شراء &lt;mark&gt;الحليب&lt;/mark&gt; اليوم.&lt;/p&gt;
+&lt;p&gt;صيغة الماء هي H&lt;sub&gt;2&lt;/sub&gt;O.&lt;/p&gt;</code></pre></div></div></section>
+                <section id="page-quotations" class="content-page"><div class="card p-6 rounded-lg border shadow-sm"><h2 class="text-2xl font-bold mb-4 border-b pb-2">10. الاقتباسات</h2><p><code>&lt;blockquote&gt;</code> للاقتباسات الطويلة التي تمثل قسمًا كاملاً، <code>&lt;q&gt;</code> للاقتباسات القصيرة داخل الفقرة، و <code>&lt;cite&gt;</code> لذكر اسم العمل المقتبس منه.</p><h4 class="text-lg font-semibold mt-4 mb-2">مثال:</h4><div class="code-block p-4 rounded-lg text-left mt-2"><pre><code>&lt;p&gt;قال حكيم: &lt;q&gt;العلم نور والجهل ظلام.&lt;/q&gt;&lt;/p&gt;
+
+&lt;blockquote cite="http://example.com"&gt;
+  هذا اقتباس طويل من مصدر ما، يظهر عادةً مع مسافة بادئة في المتصفح.
+&lt;/blockquote&gt;</code></pre></div></div></section>
+                <section id="page-comments" class="content-page"><div class="card p-6 rounded-lg border shadow-sm"><h2 class="text-2xl font-bold mb-4 border-b pb-2">11. التعليقات</h2><p>تكتب التعليقات بين <code>&lt;!--</code> و <code>--&gt;</code>. لا تظهر في المتصفح وتستخدم لترك ملاحظات للمطورين في الكود أو لتعطيل جزء من الكود مؤقتًا.</p><h4 class="text-lg font-semibold mt-4 mb-2">مثال:</h4><div class="code-block p-4 rounded-lg text-left mt-2"><pre><code>&lt;!-- هذا تعليق، لن يظهر للمستخدم --&gt;
+&lt;p&gt;هذه الفقرة ستظهر في الصفحة.&lt;/p&gt;
+
+&lt;!-- 
+&lt;p&gt;هذه الفقرة لن تظهر لأنها داخل تعليق.&lt;/p&gt;
+--&gt;</code></pre></div></div></section>
+                <section id="page-colors" class="content-page"><div class="card p-6 rounded-lg border shadow-sm"><h2 class="text-2xl font-bold mb-4 border-b pb-2">12. الألوان</h2><p>يمكن تحديد الألوان بالاسم (red)، أو بقيم RGB، أو HEX، أو HSL. تستخدم مع خصائص CSS مثل <code>color</code> (لون النص) و <code>background-color</code> (لون الخلفية).</p><h4 class="text-lg font-semibold mt-4 mb-2">مثال:</h4><div class="code-block p-4 rounded-lg text-left mt-2"><pre><code>&lt;!-- استخدام اسم اللون --&gt;
+&lt;p style="color:Tomato;"&gt;طماطم&lt;/p&gt;
+
+&lt;!-- استخدام قيمة HEX --&gt;
+&lt;p style="color:#FF5733;"&gt;برتقالي محمر&lt;/p&gt;
+
+&lt;!-- استخدام قيمة RGB --&gt;
+&lt;p style="background-color:rgb(200, 220, 255);"&gt;خلفية سماوية فاتحة&lt;/p&gt;</code></pre></div></div></section>
+                <section id="page-css" class="content-page"><div class="card p-6 rounded-lg border shadow-sm"><h2 class="text-2xl font-bold mb-4 border-b pb-2">13. الربط مع CSS</h2><p>هناك 3 طرق لإضافة CSS: 1. Inline (باستخدام سمة style). 2. Internal (باستخدام وسم <code>&lt;style&gt;</code> في الـ head). 3. External (باستخدام وسم <code>&lt;link&gt;</code> لربط ملف css خارجي)، وهي الطريقة الأفضل للمشاريع الكبيرة.</p><h4 class="text-lg font-semibold mt-4 mb-2">مثال (External CSS):</h4><div class="code-block p-4 rounded-lg text-left mt-2"><pre><code>&lt;!-- ضع هذا السطر داخل وسم &lt;head&gt; --&gt;
+&lt;link rel="stylesheet" href="styles.css"&gt;</code></pre></div></div></section>
+                <section id="page-links" class="content-page"><div class="card p-6 rounded-lg border shadow-sm"><h2 class="text-2xl font-bold mb-4 border-b pb-2">14. الروابط</h2><p>يستخدم الوسم <code>&lt;a&gt;</code> لإنشاء الروابط، وتحدد وجهة الرابط في السمة <code>href</code>. لجعل الرابط يفتح في تبويب جديد، استخدم <code>target="_blank"</code>.</p><h4 class="text-lg font-semibold mt-4 mb-2">مثال:</h4><div class="code-block p-4 rounded-lg text-left mt-2"><pre><code>&lt;!-- رابط عادي --&gt;
+&lt;a href="https://example.com"&gt;اذهب إلى Example.com&lt;/a&gt;
+
+&lt;!-- رابط يفتح في تبويب جديد --&gt;
+&lt;a href="https://google.com" target="_blank"&gt;افتح جوجل في تبويب جديد&lt;/a&gt;</code></pre></div></div></section>
+                <section id="page-link-colors" class="content-page"><div class="card p-6 rounded-lg border shadow-sm"><h2 class="text-2xl font-bold mb-4 border-b pb-2">15. ألوان الروابط</h2><p>يمكن التحكم في ألوان الروابط وحالاتها المختلفة باستخدام CSS. الحالات هي: <code>a:link</code> (الرابط العادي)، <code>a:visited</code> (تمت زيارته)، <code>a:hover</code> (عند التمرير)، <code>a:active</code> (عند النقر).</p><h4 class="text-lg font-semibold mt-4 mb-2">مثال (يوضع داخل وسم &lt;style&gt;):</h4><div class="code-block p-4 rounded-lg text-left mt-2"><pre><code>a:link { color: blue; } /* الرابط الذي لم تتم زيارته */
+a:visited { color: purple; } /* الرابط الذي تمت زيارته */
+a:hover { color: red; } /* عند مرور الماوس فوق الرابط */
+a:active { color: yellow; } /* عند النقر على الرابط */</code></pre></div></div></section>
+                <section id="page-bookmarks" class="content-page"><div class="card p-6 rounded-lg border shadow-sm"><h2 class="text-2xl font-bold mb-4 border-b pb-2">16. الإشارات المرجعية</h2><p>يمكن إنشاء رابط يقفز إلى جزء معين في نفس الصفحة عن طريق إعطاء ذلك الجزء <code>id</code> فريد، ثم استخدام <code>href="#id-value"</code> في الرابط.</p><h4 class="text-lg font-semibold mt-4 mb-2">مثال:</h4><div class="code-block p-4 rounded-lg text-left mt-2"><pre><code>&lt;!-- الرابط الذي سينقلك للأسفل --&gt;
+&lt;a href="#section2"&gt;اذهب إلى القسم الثاني&lt;/a&gt;
+
+&lt;!-- محتوى طويل هنا... --&gt;
+&lt;div style="height: 1000px;"&gt;&lt;/div&gt;
+
+&lt;!-- القسم المستهدف مع الـ id --&gt;
+&lt;h2 id="section2"&gt;هذا هو القسم الثاني&lt;/h2&gt;
+&lt;p&gt;لقد وصلت إلى هنا!&lt;/p&gt;</code></pre></div></div></section>
+                <section id="page-images" class="content-page"><div class="card p-6 rounded-lg border shadow-sm"><h2 class="text-2xl font-bold mb-4 border-b pb-2">17. الصور</h2><p>يستخدم الوسم <code>&lt;img&gt;</code> لإدراج الصور. السمة <code>src</code> تحدد مسار الصورة، و <code>alt</code> توفر نصًا بديلاً يظهر إذا فشل تحميل الصورة وهو مهم لإمكانية الوصول.</p><h4 class="text-lg font-semibold mt-4 mb-2">مثال:</h4><div class="code-block p-4 rounded-lg text-left mt-2"><pre><code>&lt;img src="https://placehold.co/400x200" alt="صورة توضيحية" width="400" height="200"&gt;</code></pre></div></div></section>
+                <section id="page-favicon" class="content-page"><div class="card p-6 rounded-lg border shadow-sm"><h2 class="text-2xl font-bold mb-4 border-b pb-2">18. أيقونة الموقع (Favicon)</h2><p>هي أيقونة صغيرة تظهر بجانب عنوان الصفحة في تبويب المتصفح. تضاف في الـ <code>&lt;head&gt;</code> باستخدام <code>&lt;link rel="icon" ...&gt;</code>.</p><h4 class="text-lg font-semibold mt-4 mb-2">مثال (يوضع داخل وسم &lt;head&gt;):</h4><div class="code-block p-4 rounded-lg text-left mt-2"><pre><code>&lt;link rel="icon" type="image/png" href="/favicon.png"&gt;</code></pre></div></div></section>
+                <section id="page-title" class="content-page"><div class="card p-6 rounded-lg border shadow-sm"><h2 class="text-2xl font-bold mb-4 border-b pb-2">19. عنوان الصفحة</h2><p>يحدد الوسم <code>&lt;title&gt;</code> داخل الـ <code>&lt;head&gt;</code> عنوان الصفحة الذي يظهر في شريط عنوان المتصفح أو تبويبه، وهو مهم جدًا لمحركات البحث.</p><h4 class="text-lg font-semibold mt-4 mb-2">مثال (يوضع داخل وسم &lt;head&gt;):</h4><div class="code-block p-4 rounded-lg text-left mt-2"><pre><code>&lt;head&gt;
+  &lt;title&gt;موسوعة HTML الشاملة&lt;/title&gt;
+&lt;/head&gt;</code></pre></div></div></section>
+                <section id="page-div" class="content-page"><div class="card p-6 rounded-lg border shadow-sm"><h2 class="text-2xl font-bold mb-4 border-b pb-2">20. عنصر Div</h2><p>الوسم <code>&lt;div&gt;</code> هو حاوية عامة (container) تستخدم لتجميع عناصر أخرى معًا بغرض التنسيق أو التنظيم. هو عنصر من نوع Block (يأخذ السطر كاملاً).</p><h4 class="text-lg font-semibold mt-4 mb-2">مثال:</h4><div class="code-block p-4 rounded-lg text-left mt-2"><pre><code>&lt;div style="background-color:#f0f0f0; padding:15px;"&gt;
+  &lt;h2&gt;عنوان القسم&lt;/h2&gt;
+  &lt;p&gt;محتوى هذا القسم موجود داخل حاوية div.&lt;/p&gt;
+&lt;/div&gt;</code></pre></div></div></section>
+                <section id="page-class-id" class="content-page"><div class="card p-6 rounded-lg border shadow-sm"><h2 class="text-2xl font-bold mb-4 border-b pb-2">21. Class و ID</h2><p><code>class</code>: يستخدم لتحديد فئة لواحد أو أكثر من العناصر لتطبيق نفس التنسيق. <code>id</code>: يستخدم لتحديد معرّف فريد لعنصر واحد فقط. لا يمكن أن يتكرر في نفس الصفحة.</p><h4 class="text-lg font-semibold mt-4 mb-2">مثال:</h4><div class="code-block p-4 rounded-lg text-left mt-2"><pre><code>&lt;style&gt;
+  /* استهداف العناصر عن طريق الكلاس */
+  .city {
+    background-color: tomato;
+    color: white;
+    padding: 10px;
+  }
+  /* استهداف العنصر عن طريق الـ ID */
+  #mainHeader {
+    border-bottom: 2px solid blue;
+  }
+&lt;/style&gt;
+
+&lt;h1 id="mainHeader"&gt;قائمة المدن&lt;/h1&gt;
+&lt;p class="city"&gt;القاهرة&lt;/p&gt;
+&lt;p class="city"&gt;الرياض&lt;/p&gt;</code></pre></div></div></section>
+                <section id="page-iframes" class="content-page"><div class="card p-6 rounded-lg border shadow-sm"><h2 class="text-2xl font-bold mb-4 border-b pb-2">22. Iframes</h2><p>يستخدم <code>&lt;iframe&gt;</code> لتضمين صفحة ويب أخرى داخل الصفحة الحالية. يمكن التحكم في أبعاده وخصائصه الأخرى عبر السمات.</p><h4 class="text-lg font-semibold mt-4 mb-2">مثال:</h4><div class="code-block p-4 rounded-lg text-left mt-2"><pre><code>&lt;iframe src="https://www.wikipedia.org" height="300" width="500" title="صفحة ويكيبيديا"&gt;&lt;/iframe&gt;</code></pre></div></div></section>
+                <section id="page-javascript" class="content-page"><div class="card p-6 rounded-lg border shadow-sm"><h2 class="text-2xl font-bold mb-4 border-b pb-2">23. JavaScript</h2><p>يستخدم الوسم <code>&lt;script&gt;</code> لإضافة كود JavaScript إلى الصفحة، إما مباشرة داخل الوسم أو بربط ملف خارجي باستخدام السمة <code>src</code>.</p><h4 class="text-lg font-semibold mt-4 mb-2">مثال (تغيير محتوى نصي عند النقر):</h4><div class="code-block p-4 rounded-lg text-left mt-2"><pre><code>&lt;p id="demo"&gt;أهلاً بك!&lt;/p&gt;
+
+&lt;button type="button" onclick="document.getElementById('demo').innerHTML = 'مرحباً بعالم JavaScript!'"&gt;انقر هنا&lt;/button&gt;</code></pre></div></div></section>
+                <section id="page-filepaths" class="content-page"><div class="card p-6 rounded-lg border shadow-sm"><h2 class="text-2xl font-bold mb-4 border-b pb-2">24. مسارات الملفات</h2><p>تستخدم لتحديد مواقع الملفات (صور، css). المسار النسبي (Relative) يكون نسبة لموقع الملف الحالي، والمسار المطلق (Absolute) يكون عنوان URL كامل.</p><h4 class="text-lg font-semibold mt-4 mb-2">مثال:</h4><div class="code-block p-4 rounded-lg text-left mt-2"><pre><code>&lt;!-- مسار مطلق (URL كامل) --&gt;
+&lt;img src="https://www.w3schools.com/images/picture.jpg" alt="Mountain"&gt;
+
+&lt;!-- مسار نسبي (الصورة في نفس المجلد) --&gt;
+&lt;img src="picture.jpg" alt="Mountain"&gt;
+
+&lt;!-- مسار نسبي (الصورة في مجلد الصور) --&gt;
+&lt;img src="/images/picture.jpg" alt="Mountain"&gt;</code></pre></div></div></section>
+                <section id="page-head" class="content-page"><div class="card p-6 rounded-lg border shadow-sm"><h2 class="text-2xl font-bold mb-4 border-b pb-2">25. عنصر Head</h2><p>الـ <code>&lt;head&gt;</code> هو حاوية للمعلومات الوصفية (metadata) عن الصفحة. يحتوي على <code>&lt;title&gt;</code>, <code>&lt;meta&gt;</code>, <code>&lt;link&gt;</code>, <code>&lt;style&gt;</code>, <code>&lt;script&gt;</code>. محتواه لا يظهر في الصفحة مباشرة.</p><h4 class="text-lg font-semibold mt-4 mb-2">مثال:</h4><div class="code-block p-4 rounded-lg text-left mt-2"><pre><code>&lt;head&gt;
+  &lt;meta charset="UTF-8"&gt;
+  &lt;meta name="description" content="دليل تعليمي للغة HTML"&gt;
+  &lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;
+  &lt;title&gt;عنوان الصفحة&lt;/title&gt;
+  &lt;link rel="stylesheet" href="style.css"&gt;
+&lt;/head&gt;</code></pre></div></div></section>
+                <section id="page-layout" class="content-page"><div class="card p-6 rounded-lg border shadow-sm"><h2 class="text-2xl font-bold mb-4 border-b pb-2">26. تخطيط الصفحة</h2><p>يستخدم HTML5 وسومًا دلالية لتخطيط الصفحة مثل <code>&lt;header&gt;</code>, <code>&lt;nav&gt;</code>, <code>&lt;main&gt;</code>, <code>&lt;section&gt;</code>, <code>&lt;article&gt;</code>, <code>&lt;aside&gt;</code>, <code>&lt;footer&gt;</code>. يتم تنسيقها باستخدام CSS Flexbox أو Grid.</p><h4 class="text-lg font-semibold mt-4 mb-2">مثال (هيكل صفحة بسيط):</h4><div class="code-block p-4 rounded-lg text-left mt-2"><pre><code>&lt;body&gt;
+  &lt;header&gt;&lt;h1&gt;عنوان الموقع&lt;/h1&gt;&lt;/header&gt;
+  &lt;nav&gt;&lt;a href="#"&gt;الرئيسية&lt;/a&gt;&lt;/nav&gt;
+  &lt;main&gt;
+    &lt;section&gt;
+      &lt;article&gt;محتوى المقال هنا&lt;/article&gt;
+    &lt;/section&gt;
+  &lt;/main&gt;
+  &lt;footer&gt;&lt;p&gt;حقوق النشر © 2025&lt;/p&gt;&lt;/footer&gt;
+&lt;/body&gt;</code></pre></div></div></section>
+                <section id="page-responsive" class="content-page"><div class="card p-6 rounded-lg border shadow-sm"><h2 class="text-2xl font-bold mb-4 border-b pb-2">27. التصميم المتجاوب</h2><p>هو تصميم يجعل صفحة الويب تبدو جيدة على جميع الأجهزة. يعتمد بشكل أساسي على وسم <code>&lt;meta name="viewport"&gt;</code> واستخدام Media Queries في CSS لتطبيق تنسيقات مختلفة بناءً على عرض الشاشة.</p><h4 class="text-lg font-semibold mt-4 mb-2">مثال (Media Query في CSS):</h4><div class="code-block p-4 rounded-lg text-left mt-2"><pre><code>&lt;!-- هذا الكود يوضع داخل ملف CSS أو وسم &lt;style&gt; --&gt;
+/* للكمبيوتر */
+.container { width: 80%; }
+
+/* للهواتف (عندما يكون عرض الشاشة 600px أو أقل) */
+@media (max-width: 600px) {
+  .container { width: 100%; }
+}</code></pre></div></div></section>
+                <section id="page-computercode" class="content-page"><div class="card p-6 rounded-lg border shadow-sm"><h2 class="text-2xl font-bold mb-4 border-b pb-2">28. عناصر أكواد الكمبيوتر</h2><p>تستخدم وسوم مثل <code>&lt;code&gt;</code> لعرض جزء من كود، <code>&lt;kbd&gt;</code> لمدخلات لوحة المفاتيح، و <code>&lt;pre&gt;</code> لعرض نص منسق مسبقًا مع الحفاظ على المسافات والأسطر.</p><h4 class="text-lg font-semibold mt-4 mb-2">مثال:</h4><div class="code-block p-4 rounded-lg text-left mt-2"><pre><code>&lt;p&gt;جزء من الكود: &lt;code&gt;let x = 5;&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;اضغط &lt;kbd&gt;Ctrl&lt;/kbd&gt; + &lt;kbd&gt;C&lt;/kbd&gt; للنسخ.&lt;/p&gt;
+&lt;pre&gt;
+  function sayHello() {
+    alert("Hello!");
+  }
+&lt;/pre&gt;</code></pre></div></div></section>
+
+                <section id="page-quiz" class="content-page"><div class="card p-6 rounded-lg border shadow-sm"><h2 class="text-2xl font-bold mb-4 border-b pb-2">29. اختبر معلوماتك</h2>
+                    <div id="quiz-container" class="space-y-6">
+                        <!-- Questions will be dynamically inserted here -->
+                        <div class="quiz-question">
+                            <p class="font-semibold">1. ماذا يعني اختصار HTML؟</p>
+                            <div class="mt-2 space-y-2 quiz-options">
+                                <div class="quiz-option p-2 border rounded-md" data-correct="true"><label><input type="radio" name="q1" class="ml-2"> HyperText Markup Language</label></div>
+                                <div class="quiz-option p-2 border rounded-md"><label><input type="radio" name="q1" class="ml-2"> Hyperlinks and Text Markup Language</label></div>
+                                <div class="quiz-option p-2 border rounded-md"><label><input type="radio" name="q1" class="ml-2"> Home Tool Markup Language</label></div>
+                            </div>
+                        </div>
+                        <div class="quiz-question">
+                             <p class="font-semibold">2. أي وسم يستخدم لإنشاء أكبر عنوان في الصفحة؟</p>
+                             <div class="mt-2 space-y-2 quiz-options">
+                                 <div class="quiz-option p-2 border rounded-md"><label><input type="radio" name="q2" class="ml-2"> &lt;h6&gt;</label></div>
+                                 <div class="quiz-option p-2 border rounded-md" data-correct="true"><label><input type="radio" name="q2" class="ml-2"> &lt;h1&gt;</label></div>
+                                 <div class="quiz-option p-2 border rounded-md"><label><input type="radio" name="q2" class="ml-2"> &lt;heading&gt;</label></div>
+                             </div>
+                        </div>
+                         <!-- Add 38 more questions similarly -->
+                        <div class="quiz-question"><p class="font-semibold">3. أي وسم يُستخدم لإنشاء فقرة نصية؟</p><div class="mt-2 space-y-2 quiz-options"><div class="quiz-option p-2 border rounded-md" data-correct="true"><label><input type="radio" name="q3"> &lt;p&gt;</label></div><div class="quiz-option p-2 border rounded-md"><label><input type="radio" name="q3"> &lt;paragraph&gt;</label></div></div></div>
+                        <div class="quiz-question"><p class="font-semibold">4. ما السمة التي تحدد عنوان URL للرابط؟</p><div class="mt-2 space-y-2 quiz-options"><div class="quiz-option p-2 border rounded-md"><label><input type="radio" name="q4"> src</label></div><div class="quiz-option p-2 border rounded-md" data-correct="true"><label><input type="radio" name="q4"> href</label></div></div></div>
+                        <div class="quiz-question"><p class="font-semibold">5. أي وسم يُستخدم لعرض صورة؟</p><div class="mt-2 space-y-2 quiz-options"><div class="quiz-option p-2 border rounded-md" data-correct="true"><label><input type="radio" name="q5"> &lt;img&gt;</label></div><div class="quiz-option p-2 border rounded-md"><label><input type="radio" name="q5"> &lt;image&gt;</label></div></div></div>
+                        <div class="quiz-question"><p class="font-semibold">6. ما وظيفة السمة 'alt' في الصور؟</p><div class="mt-2 space-y-2 quiz-options"><div class="quiz-option p-2 border rounded-md" data-correct="true"><label><input type="radio" name="q6"> توفير نص بديل إذا لم يتم عرض الصورة</label></div><div class="quiz-option p-2 border rounded-md"><label><input type="radio" name="q6"> تحديد عنوان الصورة</label></div></div></div>
+                        <div class="quiz-question"><p class="font-semibold">7. كيف تنشئ قائمة مرتبة (مرقمة)؟</p><div class="mt-2 space-y-2 quiz-options"><div class="quiz-option p-2 border rounded-md"><label><input type="radio" name="q7"> &lt;ul&gt;</label></div><div class="quiz-option p-2 border rounded-md" data-correct="true"><label><input type="radio" name="q7"> &lt;ol&gt;</label></div></div></div>
+                        <div class="quiz-question"><p class="font-semibold">8. أي وسم ينشئ صفًا في جدول؟</p><div class="mt-2 space-y-2 quiz-options"><div class="quiz-option p-2 border rounded-md" data-correct="true"><label><input type="radio" name="q8"> &lt;tr&gt;</label></div><div class="quiz-option p-2 border rounded-md"><label><input type="radio" name="q8"> &lt;td&gt;</label></div></div></div>
+                        <div class="quiz-question"><p class="font-semibold">9. أي نوع إدخال 'input' يُستخدم لكلمات المرور؟</p><div class="mt-2 space-y-2 quiz-options"><div class="quiz-option p-2 border rounded-md"><label><input type="radio" name="q9"> text</label></div><div class="quiz-option p-2 border rounded-md" data-correct="true"><label><input type="radio" name="q9"> password</label></div></div></div>
+                        <div class="quiz-question"><p class="font-semibold">10. أي من التالي هو عنصر دلالي (semantic)؟</p><div class="mt-2 space-y-2 quiz-options"><div class="quiz-option p-2 border rounded-md" data-correct="true"><label><input type="radio" name="q10"> &lt;article&gt;</label></div><div class="quiz-option p-2 border rounded-md"><label><input type="radio" name="q10"> &lt;div&gt;</label></div></div></div>
+                        <div class="quiz-question"><p class="font-semibold">11. ما الفرق الرئيسي بين &lt;div&gt; و &lt;span&gt;؟</p><div class="mt-2 space-y-2 quiz-options"><div class="quiz-option p-2 border rounded-md" data-correct="true"><label><input type="radio" name="q11"> &lt;div&gt; عنصر block، و &lt;span&gt; عنصر inline</label></div><div class="quiz-option p-2 border rounded-md"><label><input type="radio" name="q11"> لا يوجد فرق</label></div></div></div>
+                        <div class="quiz-question"><p class="font-semibold">12. كيف تكتب تعليقًا في HTML؟</p><div class="mt-2 space-y-2 quiz-options"><div class="quiz-option p-2 border rounded-md"><label><input type="radio" name="q12"> // تعليق</label></div><div class="quiz-option p-2 border rounded-md" data-correct="true"><label><input type="radio" name="q12"> &lt;!-- تعليق --&gt;</label></div></div></div>
+                        <div class="quiz-question"><p class="font-semibold">13. أي طريقة لربط CSS تُعتبر الأفضل للمشاريع الكبيرة؟</p><div class="mt-2 space-y-2 quiz-options"><div class="quiz-option p-2 border rounded-md">Internal</label></div><div class="quiz-option p-2 border rounded-md" data-correct="true"><label><input type="radio" name="q13"> External</label></div></div></div>
+                        <div class="quiz-question"><p class="font-semibold">14. أي وسم يُستخدم لربط ملف CSS خارجي؟</p><div class="mt-2 space-y-2 quiz-options"><div class="quiz-option p-2 border rounded-md" data-correct="true"><label><input type="radio" name="q14"> &lt;link&gt;</label></div><div class="quiz-option p-2 border rounded-md"><label><input type="radio" name="q14"> &lt;style&gt;</label></div></div></div>
+                        <div class="quiz-question"><p class="font-semibold">15. كيف تجعل الرابط يفتح في تبويب جديد؟</p><div class="mt-2 space-y-2 quiz-options"><div class="quiz-option p-2 border rounded-md"><label><input type="radio" name="q15"> target="_new"</label></div><div class="quiz-option p-2 border rounded-md" data-correct="true"><label><input type="radio" name="q15"> target="_blank"</label></div></div></div>
+                        <div class="quiz-question"><p class="font-semibold">16. ما هي الـ Favicon؟</p><div class="mt-2 space-y-2 quiz-options"><div class="quiz-option p-2 border rounded-md" data-correct="true"><label><input type="radio" name="q16"> أيقونة صغيرة بجانب عنوان الصفحة</label></div><div class="quiz-option p-2 border rounded-md"><label><input type="radio" name="q16"> الصورة الرئيسية في الصفحة</label></div></div></div>
+                        <div class="quiz-question"><p class="font-semibold">17. ما الفرق بين 'class' و 'id'؟</p><div class="mt-2 space-y-2 quiz-options"><div class="quiz-option p-2 border rounded-md" data-correct="true"><label><input type="radio" name="q17"> 'id' يجب أن يكون فريدًا، 'class' يمكن استخدامه عدة مرات</label></div><div class="quiz-option p-2 border rounded-md"><label><input type="radio" name="q17"> لا يوجد فرق</label></div></div></div>
+                        <div class="quiz-question"><p class="font-semibold">18. أي وسم يُستخدم لتضمين صفحة ويب أخرى؟</p><div class="mt-2 space-y-2 quiz-options"><div class="quiz-option p-2 border rounded-md"><label><input type="radio" name="q18"> &lt;embed&gt;</label></div><div class="quiz-option p-2 border rounded-md" data-correct="true"><label><input type="radio" name="q18"> &lt;iframe&gt;</label></div></div></div>
+                        <div class="quiz-question"><p class="font-semibold">19. أي وسم يُستخدم لإضافة JavaScript؟</p><div class="mt-2 space-y-2 quiz-options"><div class="quiz-option p-2 border rounded-md" data-correct="true"><label><input type="radio" name="q19"> &lt;script&gt;</label></div><div class="quiz-option p-2 border rounded-md"><label><input type="radio" name="q19"> &lt;js&gt;</label></div></div></div>
+                        <div class="quiz-question"><p class="font-semibold">20. أي عنصر هو حاوية المعلومات الوصفية (metadata)؟</p><div class="mt-2 space-y-2 quiz-options"><div class="quiz-option p-2 border rounded-md"><label><input type="radio" name="q20"> &lt;body&gt;</label></div><div class="quiz-option p-2 border rounded-md" data-correct="true"><label><input type="radio" name="q20"> &lt;head&gt;</label></div></div></div>
+                        <div class="quiz-question"><p class="font-semibold">21. أي وسم دلالي يُستخدم للجزء العلوي من الصفحة؟</p><div class="mt-2 space-y-2 quiz-options"><div class="quiz-option p-2 border rounded-md" data-correct="true"><label><input type="radio" name="q21"> &lt;header&gt;</label></div><div class="quiz-option p-2 border rounded-md"><label><input type="radio" name="q21"> &lt;top&gt;</label></div></div></div>
+                        <div class="quiz-question"><p class="font-semibold">22. ما هو الغرض من وسم meta viewport؟</p><div class="mt-2 space-y-2 quiz-options"><div class="quiz-option p-2 border rounded-md" data-correct="true"><label><input type="radio" name="q22"> للتحكم في كيفية عرض الصفحة على الأجهزة المحمولة</label></div><div class="quiz-option p-2 border rounded-md"><label><input type="radio" name="q22"> لوصف محتوى الصفحة لمحركات البحث</label></div></div></div>
+                        <div class="quiz-question"><p class="font-semibold">23. أي وسم يُستخدم لعرض كود كمبيوتر مع الحفاظ على المسافات؟</p><div class="mt-2 space-y-2 quiz-options"><div class="quiz-option p-2 border rounded-md"><label><input type="radio" name="q23"> &lt;code&gt;</label></div><div class="quiz-option p-2 border rounded-md" data-correct="true"><label><input type="radio" name="q23"> &lt;pre&gt;</label></div></div></div>
+                        <div class="quiz-question"><p class="font-semibold">24. ما هو العنصر الجذر في أي مستند HTML؟</p><div class="mt-2 space-y-2 quiz-options"><div class="quiz-option p-2 border rounded-md" data-correct="true"><label><input type="radio" name="q24"> &lt;html&gt;</label></div><div class="quiz-option p-2 border rounded-md"><label><input type="radio" name="q24"> &lt;body&gt;</label></div></div></div>
+                        <div class="quiz-question"><p class="font-semibold">25. أي سمة تُستخدم لإضافة تنسيق CSS مباشرة للعنصر؟</p><div class="mt-2 space-y-2 quiz-options"><div class="quiz-option p-2 border rounded-md"><label><input type="radio" name="q25"> class</label></div><div class="quiz-option p-2 border rounded-md" data-correct="true"><label><input type="radio" name="q25"> style</label></div></div></div>
+                        <div class="quiz-question"><p class="font-semibold">26. ما الفرق بين &lt;b&gt; و &lt;strong&gt;؟</p><div class="mt-2 space-y-2 quiz-options"><div class="quiz-option p-2 border rounded-md" data-correct="true"><label><input type="radio" name="q26"> &lt;strong&gt; له معنى دلالي (أهمية)</label></div><div class="quiz-option p-2 border rounded-md"><label><input type="radio" name="q26"> لا يوجد فرق</label></div></div></div>
+                        <div class="quiz-question"><p class="font-semibold">27. أي وسم يُستخدم للاقتباسات الطويلة؟</p><div class="mt-2 space-y-2 quiz-options"><div class="quiz-option p-2 border rounded-md" data-correct="true"><label><input type="radio" name="q27"> &lt;blockquote&gt;</label></div><div class="quiz-option p-2 border rounded-md"><label><input type="radio" name="q27"> &lt;q&gt;</label></div></div></div>
+                        <div class="quiz-question"><p class="font-semibold">28. أي قيمة لون تمثل اللون الأحمر الصافي؟</p><div class="mt-2 space-y-2 quiz-options"><div class="quiz-option p-2 border rounded-md" data-correct="true"><label><input type="radio" name="q28"> #FF0000</label></div><div class="quiz-option p-2 border rounded-md"><label><input type="radio" name="q28"> #0000FF</label></div></div></div>
+                        <div class="quiz-question"><p class="font-semibold">29. كيف تنشئ إشارة مرجعية (bookmark) داخلية؟</p><div class="mt-2 space-y-2 quiz-options"><div class="quiz-option p-2 border rounded-md"><label><input type="radio" name="q29"> &lt;a link="#C4"&gt;</label></div><div class="quiz-option p-2 border rounded-md" data-correct="true"><label><input type="radio" name="q29"> &lt;a href="#C4"&gt;</label></div></div></div>
+                        <div class="quiz-question"><p class="font-semibold">30. أي وسم دلالي يُستخدم للمحتوى الرئيسي والفريد في الصفحة؟</p><div class="mt-2 space-y-2 quiz-options"><div class="quiz-option p-2 border rounded-md" data-correct="true"><label><input type="radio" name="q30"> &lt;main&gt;</label></div><div class="quiz-option p-2 border rounded-md"><label><input type="radio" name="q30"> &lt;section&gt;</label></div></div></div>
+                        <div class="quiz-question"><p class="font-semibold">31. أي وسم يُستخدم لإنشاء خلية بيانات في جدول؟</p><div class="mt-2 space-y-2 quiz-options"><div class="quiz-option p-2 border rounded-md"><label><input type="radio" name="q31"> &lt;th&gt;</label></div><div class="quiz-option p-2 border rounded-md" data-correct="true"><label><input type="radio" name="q31"> &lt;td&gt;</label></div></div></div>
+                        <div class="quiz-question"><p class="font-semibold">32. ما هو إعلان `DOCTYPE`؟</p><div class="mt-2 space-y-2 quiz-options"><div class="quiz-option p-2 border rounded-md" data-correct="true"><label><input type="radio" name="q32"> إعلان يخبر المتصفح بنوع المستند</label></div><div class="quiz-option p-2 border rounded-md"><label><input type="radio" name="q32"> وسم لعنوان الصفحة</label></div></div></div>
+                        <div class="quiz-question"><p class="font-semibold">33. أي وسم يُستخدم لإنشاء قائمة غير مرتبة (منقطة)؟</p><div class="mt-2 space-y-2 quiz-options"><div class="quiz-option p-2 border rounded-md"><label><input type="radio" name="q33"> &lt;ol&gt;</label></div><div class="quiz-option p-2 border rounded-md" data-correct="true"><label><input type="radio" name="q33"> &lt;ul&gt;</label></div></div></div>
+                        <div class="quiz-question"><p class="font-semibold">34. أي وسم يمثل عنصرًا في قائمة؟</p><div class="mt-2 space-y-2 quiz-options"><div class="quiz-option p-2 border rounded-md" data-correct="true"><label><input type="radio" name="q34"> &lt;li&gt;</label></div><div class="quiz-option p-2 border rounded-md"><label><input type="radio" name="q34"> &lt;item&gt;</label></div></div></div>
+                        <div class="quiz-question"><p class="font-semibold">35. أي وسم دلالي يُستخدم لقائمة التنقل؟</p><div class="mt-2 space-y-2 quiz-options"><div class="quiz-option p-2 border rounded-md"><label><input type="radio" name="q35"> &lt;navigate&gt;</label></div><div class="quiz-option p-2 border rounded-md" data-correct="true"><label><input type="radio" name="q35"> &lt;nav&gt;</label></div></div></div>
+                        <div class="quiz-question"><p class="font-semibold">36. ما هو المسار النسبي للملفات؟</p><div class="mt-2 space-y-2 quiz-options"><div class="quiz-option p-2 border rounded-md" data-correct="true"><label><input type="radio" name="q36"> مسار نسبة إلى موقع الملف الحالي</label></div><div class="quiz-option p-2 border rounded-md"><label><input type="radio" name="q36"> مسار URL كامل</label></div></div></div>
+                        <div class="quiz-question"><p class="font-semibold">37. أي وسم دلالي يُستخدم للمحتوى الجانبي؟</p><div class="mt-2 space-y-2 quiz-options"><div class="quiz-option p-2 border rounded-md" data-correct="true"><label><input type="radio" name="q37"> &lt;aside&gt;</label></div><div class="quiz-option p-2 border rounded-md"><label><input type="radio" name="q37"> &lt;sidebar&gt;</label></div></div></div>
+                        <div class="quiz-question"><p class="font-semibold">38. أي وسم يُستخدم لإنشاء فاصل أسطر؟</p><div class="mt-2 space-y-2 quiz-options"><div class="quiz-option p-2 border rounded-md"><label><input type="radio" name="q38"> &lt;break&gt;</label></div><div class="quiz-option p-2 border rounded-md" data-correct="true"><label><input type="radio" name="q38"> &lt;br&gt;</label></div></div></div>
+                        <div class="quiz-question"><p class="font-semibold">39. أي وسم دلالي يُستخدم للجزء السفلي من الصفحة؟</p><div class="mt-2 space-y-2 quiz-options"><div class="quiz-option p-2 border rounded-md" data-correct="true"><label><input type="radio" name="q39"> &lt;footer&gt;</label></div><div class="quiz-option p-2 border rounded-md"><label><input type="radio" name="q39"> &lt;bottom&gt;</label></div></div></div>
+                        <div class="quiz-question"><p class="font-semibold">40. أي وسم يُستخدم لعرض مدخلات لوحة المفاتيح؟</p><div class="mt-2 space-y-2 quiz-options"><div class="quiz-option p-2 border rounded-md"><label><input type="radio" name="q40"> &lt;code&gt;</label></div><div class="quiz-option p-2 border rounded-md" data-correct="true"><label><input type="radio" name="q40"> &lt;kbd&gt;</label></div></div></div>
+                    </div>
+                    <button id="show-answers-btn" class="mt-8 px-6 py-2 rounded-md font-semibold text-white transition-colors duration-200" style="background-color: var(--accent-color);">إظهار الإجابات</button>
+                </div></section>
+                
+            </main>
+        </div>
+    </div>
+
+    <!-- سكربت جافاسكريبت لتفعيل الوضع الليلي والتنقل بين الصفحات والاختبار -->
+    <script>
+        // --- Dark Mode Logic ---
+        const toggleSwitch = document.querySelector('#checkbox');
+        function setTheme(theme) {
+            if (theme === 'dark') {
+                document.documentElement.classList.add('dark');
+                toggleSwitch.checked = true;
+                localStorage.setItem('theme', 'dark');
+            } else {
+                document.documentElement.classList.remove('dark');
+                toggleSwitch.checked = false;
+                localStorage.setItem('theme', 'light');
+            }
+        }
+        const savedTheme = localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+        setTheme(savedTheme);
+        toggleSwitch.addEventListener('change', (e) => setTheme(e.target.checked ? 'dark' : 'light'));
+
+        // --- Page Navigation Logic ---
+        const sidebarLinks = document.querySelectorAll('#sidebar-nav a');
+        const contentPages = document.querySelectorAll('#main-content .content-page');
+
+        function updatePage(hash) {
+            const targetHash = hash || window.location.hash || '#page-intro';
+            
+            sidebarLinks.forEach(link => {
+                link.classList.toggle('active', link.hash === targetHash);
+            });
+
+            contentPages.forEach(page => {
+                page.classList.toggle('active', page.id === targetHash.substring(1));
+            });
+            window.scrollTo(0, 0);
+        }
+
+        sidebarLinks.forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                const targetHash = e.currentTarget.hash;
+                if (window.location.hash !== targetHash) {
+                    window.location.hash = targetHash;
+                }
+            });
+        });
+
+        window.addEventListener('hashchange', () => updatePage(window.location.hash));
+        
+        // Initial page load
+        document.addEventListener('DOMContentLoaded', () => updatePage());
+
+        // --- Quiz Logic ---
+        const showAnswersBtn = document.getElementById('show-answers-btn');
+        if (showAnswersBtn) {
+            showAnswersBtn.addEventListener('click', () => {
+                const correctOptions = document.querySelectorAll('#quiz-container .quiz-option[data-correct="true"]');
+                correctOptions.forEach(option => {
+                    option.classList.add('correct');
+                    // select the radio button inside it
+                    const radio = option.querySelector('input[type="radio"]');
+                    if(radio) radio.checked = true;
+                });
+                showAnswersBtn.textContent = 'تم عرض الإجابات الصحيحة';
+                showAnswersBtn.disabled = true;
+            });
+        }
+    </script>
+</body>
+</html>
+
+
+
